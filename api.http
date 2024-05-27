@@ -1,0 +1,15 @@
+# api.http
+###
+# Create Order
+POST http://localhost:8080/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "item": "Item 1",
+  "amount": 100.50
+}
+
+###
+# List Orders
+GET http://localhost:8080/order

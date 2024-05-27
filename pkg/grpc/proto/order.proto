@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/dyammarcano/fullcycle_clean_architecture/pkg/grpc/pb";
+
+service OrderService {
+  rpc ListOrders (ListOrdersRequest) returns (ListOrdersResponse);
+}
+
+message ListOrdersRequest {}
+
+message ListOrdersResponse {
+  repeated Order orders = 1;
+}
+
+message Order {
+  int32 id = 1;
+  string item = 2;
+  float amount = 3;
+}
