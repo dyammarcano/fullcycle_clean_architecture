@@ -11,7 +11,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "fullcycle_clean_architecture",
-	Short: "A brief description of your application",
+	Short: "Fullcycle Clean Architecture",
 }
 
 func Execute() {

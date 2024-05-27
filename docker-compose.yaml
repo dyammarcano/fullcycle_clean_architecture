@@ -22,7 +22,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      db:
+      db_postgres:
         condition: service_healthy
     entrypoint: ["/app/app", "http", "--config", "/app/config.yaml"]
 
@@ -33,7 +33,7 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      db:
+      db_postgres:
         condition: service_healthy
     entrypoint: ["/app/app", "grpc", "--config", "/app/config.yaml"]
 
