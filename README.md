@@ -1,3 +1,5 @@
+[![CI and Test](https://github.com/dyammarcano/fullcycle_clean_architecture/actions/workflows/ci.yml/badge.svg)](https://github.com/dyammarcano/fullcycle_clean_architecture/actions/workflows/ci.yml)
+
 # Desafio Clean Architecture
 
 Olá devs!

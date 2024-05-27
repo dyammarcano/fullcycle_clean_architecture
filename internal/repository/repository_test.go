@@ -6,9 +6,6 @@ import (
 )
 
 func TestRepository(t *testing.T) {
-	//cfg := config.NewConfig(config.WithBoltDB("test"))
-	//var repository = Must(NewBoltRepository(cfg))
-
 	var repository = Must(NewMemoryRepository())
 
 	var order = &domain.Order{
@@ -16,7 +13,7 @@ func TestRepository(t *testing.T) {
 		Amount: 2,
 	}
 
-	if err := repository.CreateOrder(order); err != nil {
+	if _, err := repository.CreateOrder(order); err != nil {
 		t.Errorf("Error creating order")
 	}
 
