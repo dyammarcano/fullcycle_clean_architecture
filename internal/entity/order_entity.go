@@ -76,9 +76,6 @@ func NewOrder(id int, item string, amount float32) (*Order, error) {
 }
 
 func (o *Order) IsValid() error {
-	if o.ID == 0 {
-		return ErrInvalidEntity
-	}
 	if o.Item == "" {
 		return ErrInvalidEntity
 	}
