@@ -70,14 +70,27 @@ $ cd fullcycle_clean_architecture
 $  docker-compose up --build
 ```
 
-4. Acesse o endereço `http://localhost:8080/` para acessar a interface do GraphQL Playground, e o server http
-5. Acesse o endereço `http://localhost:8081/` para acessar a interface do gRPC 
+4. Acesse o endereço `http://localhost:8080/graphql` para acessar a ‘interface’ do GraphQL Playground
+5. Acesse o endereço `http://localhost:8080/order` para acessar a ‘interface’ http
+6. Acesse o endereço `http://localhost:8081/` para acessar a ‘interface’ do gRPC 
 
 # Endpoints
 
-- GraphQL Playground: `http://localhost:8080/`
+- GraphQL Playground: `http://localhost:8080/graphql`
 - gRPC: `http://localhost:8081/`
 - REST: `http://localhost:8080/order`
+
+# GraphQL Query
+
+```graphql
+query ListOrders {
+  listOrders {
+    amount
+    id
+    item
+  }
+}
+```
 
 # gRPC Client
 
@@ -144,4 +157,14 @@ fullcycle@127.0.0.1:8081> service OrderService
 
 ```bash
 fullcycle.OrderService@127.0.0.1:8081> call ListOrders {}
+{
+  "orders": [
+    {
+      "amount": 50,
+      "id": 1,
+      "item": "Nike Dunk Low"
+    },
+  ...
+  ]
+}
 ```
