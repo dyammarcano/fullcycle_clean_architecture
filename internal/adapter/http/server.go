@@ -25,7 +25,6 @@ func (s *OrderServer) ListOrdersHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	util.HelperJSOM(w, r, orders)
 }
 
@@ -39,13 +38,11 @@ func (s *OrderServer) CreateOrderHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	order, err := s.UseCase.CreateOrder(orderBytes)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	util.HelperJSOM(w, r, order)
 }
 
@@ -60,7 +57,6 @@ func (s *OrderServer) GetOrderByIDHandler(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	util.HelperJSOM(w, r, order)
 }
 
@@ -70,19 +66,18 @@ func (s *OrderServer) UpdateOrderHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	orderBytes, err := util.ReadBytes(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if err = s.UseCase.UpdateOrder(idInt, orderBytes); err != nil {
+	order, err := s.UseCase.UpdateOrder(idInt, orderBytes)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	w.WriteHeader(http.StatusNoContent)
+	util.HelperJSOM(w, r, order)
 }
 
 func (s *OrderServer) DeleteOrderHandler(w http.ResponseWriter, r *http.Request) {

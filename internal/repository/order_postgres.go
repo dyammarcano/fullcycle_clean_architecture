@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
+	"github.com/dyammarcano/fullcycle_clean_architecture/internal/entity"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -19,7 +19,7 @@ type OrderPostgresRepository struct {
 	db *sql.DB
 }
 
-func (r *OrderPostgresRepository) ListOrders() ([]*domain.Order, error) {
+func (r *OrderPostgresRepository) ListOrders() ([]*entity.OrderOutputDTO, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -29,9 +29,9 @@ func (r *OrderPostgresRepository) ListOrders() ([]*domain.Order, error) {
 	}
 	defer rows.Close()
 
-	orders := make([]*domain.Order, 0)
+	orders := make([]*entity.OrderOutputDTO, 0)
 	for rows.Next() {
-		var order domain.Order
+		var order entity.OrderOutputDTO
 		if err = rows.Scan(&order.ID, &order.Item, &order.Amount); err != nil {
 			return orders, err
 		}
@@ -41,7 +41,7 @@ func (r *OrderPostgresRepository) ListOrders() ([]*domain.Order, error) {
 	return orders, nil
 }
 
-func (r *OrderPostgresRepository) CreateOrder(order *domain.Order) (*domain.Order, error) {
+func (r *OrderPostgresRepository) CreateOrder(order *entity.Order) (*entity.OrderOutputDTO, error) {
 	if order == nil {
 		return nil, ErrInvalidEntity
 	}
@@ -66,10 +66,14 @@ func (r *OrderPostgresRepository) CreateOrder(order *domain.Order) (*domain.Orde
 		}
 	}
 
-	return order, nil
+	return &entity.OrderOutputDTO{
+		ID:     order.ID,
+		Item:   order.Item,
+		Amount: order.Amount,
+	}, nil
 }
 
-func (r *OrderPostgresRepository) GetOrderByID(id int) (*domain.Order, error) {
+func (r *OrderPostgresRepository) GetOrderByID(id int) (*entity.OrderOutputDTO, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -83,29 +87,37 @@ func (r *OrderPostgresRepository) GetOrderByID(id int) (*domain.Order, error) {
 		return nil, err
 	}
 
-	order := &domain.Order{}
+	order := &entity.OrderInputDTO{}
 	if err := json.Unmarshal([]byte(data), order); err != nil {
 		return nil, err
 	}
 
-	return order, nil
+	return &entity.OrderOutputDTO{
+		ID:     order.ID,
+		Item:   order.Item,
+		Amount: order.Amount,
+	}, nil
 }
 
-func (r *OrderPostgresRepository) UpdateOrder(id int, order *domain.Order) error {
+func (r *OrderPostgresRepository) UpdateOrder(id int, order *entity.OrderInputDTO) (*entity.OrderOutputDTO, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	stmt, err := r.db.PrepareContext(ctx, `UPDATE orders SET item = $1, amount = $2, WHERE id = $3`)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer stmt.Close()
 
 	if _, err = stmt.Exec(order.Item, order.Amount, id); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &entity.OrderOutputDTO{
+		ID:     order.ID,
+		Item:   order.Item,
+		Amount: order.Amount,
+	}, nil
 }
 
 func (r *OrderPostgresRepository) DeleteOrder(id int) error {
@@ -126,7 +138,7 @@ func (r *OrderPostgresRepository) DeleteOrder(id int) error {
 	return nil
 }
 
-func NewOrderPostgresRepository() (domain.OrderRepository, error) {
+func NewOrderPostgresRepository() (entity.OrderRepository, error) {
 	dataSourceName := fmt.Sprintf("user=%s dbname=%s password=%s host=%s port=%d sslmode=%s",
 		config.G.Db.User, config.G.Db.Dbname, config.G.Db.Password, config.G.Db.Host, config.G.Db.Port, config.G.Db.Sslmode)
 

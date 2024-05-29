@@ -1,26 +1,26 @@
 package repository
 
 import (
-	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
+	"github.com/dyammarcano/fullcycle_clean_architecture/internal/entity"
 )
 
 type OrderMemoryRepository struct {
-	orders map[int]*domain.Order
+	orders map[int]*entity.OrderOutputDTO
 }
 
-func (r *OrderMemoryRepository) GetOrderByID(id int) (*domain.Order, error) {
+func (r *OrderMemoryRepository) GetOrderByID(id int) (*entity.OrderOutputDTO, error) {
 	return r.orders[id], nil
 }
 
-func (r *OrderMemoryRepository) ListOrders() ([]*domain.Order, error) {
-	orders := make([]*domain.Order, 0)
+func (r *OrderMemoryRepository) ListOrders() ([]*entity.OrderOutputDTO, error) {
+	orders := make([]*entity.OrderOutputDTO, 0)
 	for _, order := range r.orders {
 		orders = append(orders, order)
 	}
 	return orders, nil
 }
 
-func (r *OrderMemoryRepository) CreateOrder(order *domain.Order) (*domain.Order, error) {
+func (r *OrderMemoryRepository) CreateOrder(order *entity.Order) (*entity.OrderOutputDTO, error) {
 	if order == nil {
 		return nil, ErrInvalidEntity
 	}
@@ -28,13 +28,21 @@ func (r *OrderMemoryRepository) CreateOrder(order *domain.Order) (*domain.Order,
 		return nil, ErrUserAlreadyExists
 	}
 	order.ID = len(r.orders) + 1
-	r.orders[order.ID] = order
-	return order, nil
+	r.orders[order.ID] = &entity.OrderOutputDTO{
+		ID:     order.ID,
+		Item:   order.Item,
+		Amount: order.Amount,
+	}
+	return r.orders[order.ID], nil
 }
 
-func (r *OrderMemoryRepository) UpdateOrder(id int, order *domain.Order) error {
-	r.orders[id] = order
-	return nil
+func (r *OrderMemoryRepository) UpdateOrder(id int, order *entity.OrderInputDTO) (*entity.OrderOutputDTO, error) {
+	r.orders[id] = &entity.OrderOutputDTO{
+		ID:     order.ID,
+		Item:   order.Item,
+		Amount: order.Amount,
+	}
+	return r.orders[order.ID], nil
 }
 
 func (r *OrderMemoryRepository) DeleteOrder(id int) error {
@@ -47,6 +55,6 @@ func (r *OrderMemoryRepository) Close() error {
 	return nil
 }
 
-func NewMemoryRepository() (domain.OrderRepository, error) {
-	return &OrderMemoryRepository{orders: make(map[int]*domain.Order)}, nil
+func NewMemoryRepository() (entity.OrderRepository, error) {
+	return &OrderMemoryRepository{orders: make(map[int]*entity.OrderOutputDTO)}, nil
 }
