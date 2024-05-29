@@ -8,6 +8,7 @@ import (
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/grpc/pb"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/logger"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log/slog"
 	"net"
 )
@@ -48,6 +49,9 @@ func (s *OrderServer) Start() error {
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterOrderServiceServer(grpcServer, s)
+
+	logger.Log(slog.LevelInfo, "Registering gRPC reflection")
+	reflection.Register(grpcServer)
 
 	logger.Log(slog.LevelInfo, "gRPC server is running on port", slog.String("port", lis.Addr().String()))
 	return grpcServer.Serve(lis)

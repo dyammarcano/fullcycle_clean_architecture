@@ -35,7 +35,7 @@ func NewOrderServiceClient(cc grpc.ClientConnInterface) OrderServiceClient {
 
 func (c *orderServiceClient) ListOrders(ctx context.Context, in *ListOrdersRequest, opts ...grpc.CallOption) (*ListOrdersResponse, error) {
 	out := new(ListOrdersResponse)
-	err := c.cc.Invoke(ctx, "/proto.OrderService/ListOrders", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/fullcycle.OrderService/ListOrders", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func _OrderService_ListOrders_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/proto.OrderService/ListOrders",
+		FullMethod: "/fullcycle.OrderService/ListOrders",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OrderServiceServer).ListOrders(ctx, req.(*ListOrdersRequest))
@@ -92,7 +92,7 @@ func _OrderService_ListOrders_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var OrderService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.OrderService",
+	ServiceName: "fullcycle.OrderService",
 	HandlerType: (*OrderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

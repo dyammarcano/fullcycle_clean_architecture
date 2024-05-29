@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto;
+package fullcycle;
 
 option go_package = "github.com/dyammarcano/fullcycle_clean_architecture/pkg/grpc/pb";
 
