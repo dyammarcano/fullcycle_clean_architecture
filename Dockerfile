@@ -10,7 +10,7 @@ RUN go mod download \
 
 COPY . .
 
-RUN go build -v -o app main.go
+RUN go build -v -gcflags="all=-N -l" -o app main.go
 
 # Stage 2: Production
 FROM gcr.io/distroless/base-debian12:nonroot
