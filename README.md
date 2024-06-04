@@ -51,6 +51,16 @@ github.com/dyammarcano/fullcycle_clean_architecture
 
 # Executando o projeto
 
+### NOTA:
+
+Certifique-se de que você tenha o Docker instalado na sua máquina y que o serviço do Docker esteja em execução.
+
+Alen disso, é preciso ter instalada alguma ferramenta para interagir com gRPC, poder ser: 
+
+* [postman](https://www.postman.com/downloads)
+* [evans](https://github.com/ktr0731/evans)
+* [grpcurl](https://github.com/fullstorydev/grpcurl)
+
 1. Clone o repositório
 
 ```bash
@@ -70,9 +80,18 @@ $ cd fullcycle_clean_architecture
 $  docker-compose up --build
 ```
 
-4. Acesse o endereço `http://localhost:8080/graphql` para acessar a ‘interface’ do GraphQL Playground
-5. Acesse o endereço `http://localhost:8080/order` para acessar a ‘interface’ http
-6. Acesse o endereço `http://localhost:8081/` para acessar a ‘interface’ do gRPC 
+4. Acesse o endereço [http://localhost:8080/graphql](http://localhost:8080/graphql) para acessar a ‘interface’ do GraphQL Playground
+
+![img_1.png](img_1.png)
+
+5. Acesse o endereço [http://localhost:8080/order](http://localhost:8080/order) para acessar a ‘interface’ http
+
+![img_2.png](img_2.png)
+
+6. Acesse o endereço [127.0.0.1:8081](127.0.0.1:8081) para acessar a ‘interface’ do gRPC
+
+![img_3.png](img_3.png)
+![img_4.png](img_4.png)
 
 # Endpoints
 
