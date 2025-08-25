@@ -6,5 +6,6 @@ func Must(repo domain.OrderRepository, err error) domain.OrderRepository {
 	if err != nil {
 		panic(err)
 	}
+
 	return repo
 }

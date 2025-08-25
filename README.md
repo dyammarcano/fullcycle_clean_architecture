@@ -29,13 +29,13 @@ serviço.
 github.com/dyammarcano/fullcycle_clean_architecture
 ├───cmd
 ├───internal
-│   ├───adapter
+│   ├───adapter        # Adapters (driving/driven): HTTP, gRPC, GraphQL
 │   │   ├───grpc
 │   │   └───http
-│   ├───domain
-│   ├───repository
+│   ├───domain         # Core domain entities and repository interfaces
+│   ├───repository     # Infrastructure implementations of domain ports
 │   │   └───migrations
-│   └───usecase
+│   └───usecase        # Application services (business rules), depend on domain ports
 └───pkg
 │   ├───config
 │   ├───grpc
@@ -48,6 +48,20 @@ github.com/dyammarcano/fullcycle_clean_architecture
 ├── docker-compose.yaml
 └── README.md
 ```
+
+## Hexagonal (Ports and Adapters) compliance
+
+- Domain owns the Order entity and the OrderRepository port (internal/domain).
+- Use cases depend only on the domain port and domain entities (or simple DTOs); no transport/serialization details in use cases.
+- Adapters (HTTP, GraphQL, gRPC) depend on use cases and handle serialization/deserialization (JSON, protobuf), translating I/O to domain types.
+- Repositories implement the domain port in infrastructure packages (memory, Postgres) and are chosen at composition time.
+- Config, logging, and transport details live outside the core and are injected.
+
+Recent small fixes to support this:
+
+- Corrected HTTP JSON helper naming (HelperJSON) and usages for clarity.
+- Fixed Postgres repository SQL and scanning to map to domain without leaking infra concerns.
+- Moved JSON unmarshalling from use case into HTTP adapter; use cases now accept domain entities.
 
 # Executando o projeto
 

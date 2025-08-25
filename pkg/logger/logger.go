@@ -2,10 +2,11 @@ package logger
 
 import (
 	"context"
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"io"
 	"log/slog"
 	"os"
+
+	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 )
 
 func init() {

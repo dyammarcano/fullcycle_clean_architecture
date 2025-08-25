@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"encoding/json"
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 )
 
@@ -13,11 +12,7 @@ func (o *OrderUseCase) ListOrders() ([]*domain.Order, error) {
 	return o.OrderRepo.ListOrders()
 }
 
-func (o *OrderUseCase) CreateOrder(orderBytes []byte) (*domain.Order, error) {
-	order := &domain.Order{}
-	if err := json.Unmarshal(orderBytes, order); err != nil {
-		return nil, err
-	}
+func (o *OrderUseCase) CreateOrder(order *domain.Order) (*domain.Order, error) {
 	return o.OrderRepo.CreateOrder(order)
 }
 
@@ -25,11 +20,7 @@ func (o *OrderUseCase) GetOrderByID(id int) (*domain.Order, error) {
 	return o.OrderRepo.GetOrderByID(id)
 }
 
-func (o *OrderUseCase) UpdateOrder(id int, orderBytes []byte) error {
-	order := &domain.Order{}
-	if err := json.Unmarshal(orderBytes, order); err != nil {
-		return err
-	}
+func (o *OrderUseCase) UpdateOrder(id int, order *domain.Order) error {
 	return o.OrderRepo.UpdateOrder(id, order)
 }
 

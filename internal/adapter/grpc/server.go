@@ -3,17 +3,19 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"net"
+
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/usecase"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/grpc/pb"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/logger"
 	"google.golang.org/grpc"
-	"log/slog"
-	"net"
 )
 
 type OrderServer struct {
 	pb.UnimplementedOrderServiceServer
+
 	UseCase *usecase.OrderUseCase
 }
 
@@ -23,7 +25,7 @@ func (s *OrderServer) ListOrders(ctx context.Context, req *pb.ListOrdersRequest)
 		return nil, err
 	}
 
-	var grpcOrders []*pb.Order
+	grpcOrders := make([]*pb.Order, len(orders))
 	for _, order := range orders {
 		grpcOrders = append(grpcOrders, &pb.Order{
 			Id:     int32(order.ID),
@@ -50,5 +52,6 @@ func (s *OrderServer) Start() error {
 	pb.RegisterOrderServiceServer(grpcServer, s)
 
 	logger.Log(slog.LevelInfo, "gRPC server is running on port", slog.String("port", lis.Addr().String()))
+
 	return grpcServer.Serve(lis)
 }

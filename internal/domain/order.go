@@ -9,7 +9,7 @@ type OrderRepository interface {
 }
 
 type Order struct {
-	ID     int
-	Item   string
-	Amount float32
+	ID     int     `json:"id"`
+	Item   string  `json:"item"`
+	Amount float32 `json:"amount"`
 }

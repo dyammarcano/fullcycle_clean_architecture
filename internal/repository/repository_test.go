@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 	"testing"
+
+	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 )
 
 func TestRepository(t *testing.T) {

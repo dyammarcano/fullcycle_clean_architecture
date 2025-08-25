@@ -3,16 +3,17 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
+	"time"
+
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
-	"time"
 )
 
 type OrderPostgresRepository struct {
@@ -27,14 +28,20 @@ func (r *OrderPostgresRepository) ListOrders() ([]*domain.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		if err := rows.Close(); err != nil {
+			slog.Error(">>> Error closing rows: ", slog.String("error", err.Error()))
+		}
+	}(rows)
 
 	orders := make([]*domain.Order, 0)
 	for rows.Next() {
 		var order domain.Order
+
 		if err = rows.Scan(&order.ID, &order.Item, &order.Amount); err != nil {
 			return orders, err
 		}
+
 		orders = append(orders, &order)
 	}
 
@@ -53,7 +60,11 @@ func (r *OrderPostgresRepository) CreateOrder(order *domain.Order) (*domain.Orde
 	if err != nil {
 		return nil, err
 	}
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		if err := stmt.Close(); err != nil {
+			slog.Error(">>> Error closing statement: ", slog.String("error", err.Error()))
+		}
+	}(stmt)
 
 	rows, err := stmt.Query(order.Item, order.Amount)
 	if err != nil {
@@ -73,18 +84,14 @@ func (r *OrderPostgresRepository) GetOrderByID(id int) (*domain.Order, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	row := r.db.QueryRowContext(ctx, "SELECT * FROM orders WHERE id = $1", id)
+	row := r.db.QueryRowContext(ctx, "SELECT id, item, amount FROM orders WHERE id = $1", id)
 
-	var data string
-	if err := row.Scan(&data); err != nil {
+	order := &domain.Order{}
+	if err := row.Scan(&order.ID, &order.Item, &order.Amount); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrOrderNotFound
 		}
-		return nil, err
-	}
 
-	order := &domain.Order{}
-	if err := json.Unmarshal([]byte(data), order); err != nil {
 		return nil, err
 	}
 
@@ -95,11 +102,15 @@ func (r *OrderPostgresRepository) UpdateOrder(id int, order *domain.Order) error
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	stmt, err := r.db.PrepareContext(ctx, `UPDATE orders SET item = $1, amount = $2, WHERE id = $3`)
+	stmt, err := r.db.PrepareContext(ctx, `UPDATE orders SET item = $1, amount = $2 WHERE id = $3`)
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		if err := stmt.Close(); err != nil {
+			slog.Error(">>> Error closing statement: ", slog.String("error", err.Error()))
+		}
+	}(stmt)
 
 	if _, err = stmt.Exec(order.Item, order.Amount, id); err != nil {
 		return err
@@ -116,7 +127,11 @@ func (r *OrderPostgresRepository) DeleteOrder(id int) error {
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
+	defer func(stmt *sql.Stmt) {
+		if err := stmt.Close(); err != nil {
+			slog.Error(">>> Error closing statement: ", slog.String("error", err.Error()))
+		}
+	}(stmt)
 
 	_, err = stmt.Exec(id)
 	if err != nil {

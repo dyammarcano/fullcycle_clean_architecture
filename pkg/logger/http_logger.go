@@ -8,6 +8,7 @@ import (
 
 type wrappedWriter struct {
 	http.ResponseWriter
+
 	statusCode int
 }
 
