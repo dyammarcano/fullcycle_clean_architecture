@@ -5,14 +5,16 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 	"time"
 
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
+	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/parameters"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/inovacc/config"
 	_ "github.com/lib/pq"
 )
 
@@ -50,7 +52,7 @@ func (r *OrderPostgresRepository) ListOrders() ([]*domain.Order, error) {
 
 func (r *OrderPostgresRepository) CreateOrder(order *domain.Order) (*domain.Order, error) {
 	if order == nil {
-		return nil, ErrInvalidEntity
+		return nil, fmt.Errorf("invalid entity")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -94,7 +96,7 @@ func (r *OrderPostgresRepository) GetOrderByID(id int) (*domain.Order, error) {
 	order := &domain.Order{}
 	if err := row.Scan(&order.ID, &order.Item, &order.Amount); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrOrderNotFound
+			return nil, fmt.Errorf("order not found")
 		}
 
 		return nil, err
@@ -146,15 +148,20 @@ func (r *OrderPostgresRepository) DeleteOrder(id int) error {
 }
 
 func NewOrderPostgresRepository() (domain.OrderRepository, error) {
+	cfg, err := config.GetServiceConfig[*parameters.Service]()
+	if err != nil {
+		log.Fatalf("Failed to get service config: %v", err)
+	}
+
 	dataSourceName := fmt.Sprintf("user=%s dbname=%s password=%s host=%s port=%d sslmode=%s",
-		config.G.Db.User, config.G.Db.Dbname, config.G.Db.Password, config.G.Db.Host, config.G.Db.Port, config.G.Db.Sslmode)
+		cfg.Database.User, cfg.Database.Name, cfg.Database.Password, cfg.Database.Host, cfg.Database.Port, "disable")
+
+	// Open the database connection
 
 	db, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
 		return nil, err
 	}
-
-	db.SetMaxOpenConns(config.G.Db.MaxOpenConns)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

@@ -3,17 +3,19 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
 	"strconv"
 
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/usecase"
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/logger"
+	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/parameters"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/util"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
+	"github.com/inovacc/config"
 )
 
 type OrderServer struct {
@@ -50,7 +52,7 @@ func (s *OrderServer) CreateOrderHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	created, err := s.UseCase.CreateOrder(&order)
+	created, err := s.UseCase.CreateOrder(order.Bytes())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -94,7 +96,8 @@ func (s *OrderServer) UpdateOrderHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err = s.UseCase.UpdateOrder(idInt, &order); err != nil {
+	_, err = s.UseCase.UpdateOrder(idInt, order.Bytes())
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -159,6 +162,11 @@ func NewGraphQL(useCase *usecase.OrderUseCase) http.Handler {
 }
 
 func NewHttpOrderServer(useCase *usecase.OrderUseCase) *OrderServer {
+	cfg, err := config.GetServiceConfig[*parameters.Service]()
+	if err != nil {
+		log.Fatalf("Failed to get service config: %v", err)
+	}
+
 	orderServer := &OrderServer{
 		UseCase: useCase,
 		Handler: NewGraphQL(useCase),
@@ -173,7 +181,7 @@ func NewHttpOrderServer(useCase *usecase.OrderUseCase) *OrderServer {
 	router.HandleFunc("/graphql", orderServer.GetGraphQLHandler)
 
 	orderServer.Server = http.Server{
-		Addr:    fmt.Sprintf(":%d", config.G.Http.Port),
+		Addr:    fmt.Sprintf(":%d", cfg.Http.Port),
 		Handler: logger.Middleware(router),
 	}
 
@@ -181,6 +189,6 @@ func NewHttpOrderServer(useCase *usecase.OrderUseCase) *OrderServer {
 }
 
 func (s *OrderServer) Start() error {
-	logger.Log(slog.LevelInfo, "HTTP server is running on port", slog.String("port", s.Addr))
+	slog.Info("HTTP server is running on port", slog.String("port", s.Addr))
 	return s.ListenAndServe()
 }

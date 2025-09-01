@@ -1,18 +1,21 @@
-http:
-  port: 8080
-grpc:
-  port: 8081
+environment: dev
+appID: b5d59013-7f8f-4f4d-bc66-3a0741ea8750
+appSecret: 75c0e36c-be36-43ad-86f6-15bbef232954
 logger:
-  logLevel: "info"
-  logFormat: "json"
-db:
-  driver: "postgres"
-  name: "postgres"
-  host: "db_postgres"
-  port: 5432
-  user: "postgres"
-  password: "mysecretpassword"
-  sslmode: "disable"
-  dbName: "postgres"
-  maxIdleConns: 10
-  maxOpenConns: 5
+  logLevel: DEBUG
+service:
+  http:
+    port: 8080
+  grpc:
+    port: 8081
+  db:
+    driver: "postgres"
+    name: "postgres"
+    host: "db_postgres"
+    port: 5432
+    user: "postgres"
+    password: "mysecretpassword"
+    sslmode: "disable"
+    dbName: "postgres"
+    maxIdleConns: 10
+    maxOpenConns: 5

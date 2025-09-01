@@ -71,7 +71,7 @@ Recent small fixes to support this:
 
 Certifique-se de que você tenha o Docker instalado na sua máquina y que o serviço do Docker esteja em execução.
 
-Alen disso, é preciso ter instalada alguma ferramenta para interagir com gRPC, poder ser: 
+Alen disso, é preciso ter instalada alguma ferramenta para interagir com gRPC, poder ser:
 
 * [postman](https://www.postman.com/downloads)
 * [evans](https://github.com/ktr0731/evans)

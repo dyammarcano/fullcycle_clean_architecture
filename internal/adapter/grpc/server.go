@@ -3,13 +3,14 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"log"
 	"log/slog"
 	"net"
 
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/usecase"
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/grpc/pb"
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/logger"
+	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/parameters"
+	"github.com/inovacc/config"
 	"google.golang.org/grpc"
 )
 
@@ -43,7 +44,12 @@ func NewGrpcOrderServer(useCase *usecase.OrderUseCase) *OrderServer {
 }
 
 func (s *OrderServer) Start() error {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.G.Grpc.Port))
+	cfg, err := config.GetServiceConfig[*parameters.Service]()
+	if err != nil {
+		log.Fatalf("Failed to get service config: %v", err)
+	}
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Grpc.Port))
 	if err != nil {
 		return err
 	}
@@ -51,7 +57,7 @@ func (s *OrderServer) Start() error {
 	grpcServer := grpc.NewServer()
 	pb.RegisterOrderServiceServer(grpcServer, s)
 
-	logger.Log(slog.LevelInfo, "gRPC server is running on port", slog.String("port", lis.Addr().String()))
+	slog.Info("gRPC server is running on port", slog.String("port", lis.Addr().String()))
 
 	return grpcServer.Serve(lis)
 }

@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
+	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/parameters"
+	"github.com/inovacc/config"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var rootCmd = &cobra.Command{
@@ -35,22 +36,8 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	viper.SetConfigFile(cfgFile)
-	viper.AutomaticEnv()
-
-	// If a config file is found, read it in.
-	if err = viper.ReadInConfig(); err != nil {
-		_, _ = fmt.Fprintln(os.Stdout, "Error reading config file")
-		os.Exit(1)
-	}
-
-	if err = viper.Unmarshal(config.G); err != nil {
-		_, _ = fmt.Fprintln(os.Stdout, "Error unmarshalling config")
-		os.Exit(1)
-	}
-
-	if err = config.G.Validate(); err != nil {
-		_, _ = fmt.Fprintln(os.Stdout, "Error validating config")
-		os.Exit(1)
+	svc := parameters.Service{}
+	if err := config.InitServiceConfig(svc, cfgFile); err != nil {
+		log.Fatalf("Failed to load config: %v", err)
 	}
 }

@@ -2,44 +2,46 @@ package usecase
 
 import (
 	"encoding/json"
-	"github.com/dyammarcano/fullcycle_clean_architecture/internal/entity"
+
+	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 )
 
 type OrderUseCase struct {
-	OrderRepo entity.OrderRepository
+	OrderRepo domain.OrderRepository
 }
 
-func (o *OrderUseCase) ListOrders() ([]*entity.OrderOutputDTO, error) {
+func (o *OrderUseCase) ListOrders() ([]*domain.Order, error) {
 	return o.OrderRepo.ListOrders()
 }
 
-func (o *OrderUseCase) CreateOrder(orderBytes []byte) (*entity.OrderOutputDTO, error) {
-	order := &entity.Order{}
+func (o *OrderUseCase) CreateOrder(orderBytes []byte) (*domain.Order, error) {
+	order := &domain.Order{}
 	if err := json.Unmarshal(orderBytes, order); err != nil {
-		return nil, err
-	}
-	if err := order.IsValid(); err != nil {
 		return nil, err
 	}
 	return o.OrderRepo.CreateOrder(order)
 }
 
-func (o *OrderUseCase) GetOrderByID(id int) (*entity.OrderOutputDTO, error) {
+func (o *OrderUseCase) GetOrderByID(id int) (*domain.Order, error) {
 	return o.OrderRepo.GetOrderByID(id)
 }
 
-func (o *OrderUseCase) UpdateOrder(id int, orderBytes []byte) (*entity.OrderOutputDTO, error) {
-	order := &entity.OrderInputDTO{}
+func (o *OrderUseCase) UpdateOrder(id int, orderBytes []byte) (*domain.Order, error) {
+	order := &domain.Order{}
 	if err := json.Unmarshal(orderBytes, order); err != nil {
 		return nil, err
 	}
-	return o.OrderRepo.UpdateOrder(id, order)
+	if err := o.OrderRepo.UpdateOrder(id, order); err != nil {
+		return nil, err
+	}
+	order.ID = id
+	return order, nil
 }
 
 func (o *OrderUseCase) DeleteOrder(id int) error {
 	return o.OrderRepo.DeleteOrder(id)
 }
 
-func NewOrderUseCase(repo entity.OrderRepository) *OrderUseCase {
+func NewOrderUseCase(repo domain.OrderRepository) *OrderUseCase {
 	return &OrderUseCase{OrderRepo: repo}
 }
