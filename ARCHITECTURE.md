@@ -1,6 +1,7 @@
 # Arquitetura e Separação de Camadas
 
 Este projeto segue os princípios de Clean Architecture / Hexagonal (Ports and Adapters), promovendo:
+
 - Independência de framework (HTTP/GRPC/BD substituíveis)
 - Independência de UI/Transporte (JSON/Protobuf/GraphQL)
 - Independência de banco de dados (Memória/Postgres)
@@ -22,6 +23,7 @@ Este projeto segue os princípios de Clean Architecture / Hexagonal (Ports and A
   - Utilidades transversais (config, logger, util, grpc/pb). Usadas pelas camadas externas. Não devem ser requeridas por domain/usecase.
 
 ## Regras de dependência
+
 - domain não importa nada.
 - usecase importa apenas domain.
 - adapters (http/grpc) importam usecase (e util/logger) e fazem a tradução de dados.
@@ -29,6 +31,7 @@ Este projeto segue os princípios de Clean Architecture / Hexagonal (Ports and A
 - cmd faz o assembly de tudo e decide implementações concretas.
 
 ## Pontos revisados
+
 - O adapter HTTP desserializa JSON para domain.Order e chama o usecase. Correto: o transporte não contamina o usecase.
 - O adapter gRPC converte domain.Order para pb.Order. Foi corrigido um detalhe na criação do slice para evitar entradas nulas (ver mudanças). ✓
 - O usecase usa apenas a porta OrderRepository e o tipo Order do domínio. ✓
@@ -36,11 +39,13 @@ Este projeto segue os princípios de Clean Architecture / Hexagonal (Ports and A
 - Config e logger estão fora do núcleo e são usados na composição/adapters/infra. ✓
 
 ## Possíveis melhorias futuras (não disruptivas)
+
 - DTOs de transporte: criar structs específicos para requests/responses em HTTP/GraphQL para não acoplar o JSON diretamente à entidade de domínio (atualmente aceitável, mas melhora o isolamento).
 - Normalizar erros em internal/repository/errors.go (há mensagens de "user" que não se aplicam a orders). Poderia ser movido para um pacote de erros por contexto ou mapeado nos adapters.
 - Validação de domínio: adicionar métodos/construtores em domain para invariantes (ex.: Amount > 0).
 
 ## Mudanças realizadas nesta revisão
+
 - Correção em internal/adapter/grpc/server.go: ajustada a inicialização do slice para mapear orders sem produzir entradas nulas:
   - Antes: make(len), depois append -> duplicava o comprimento com nulos.
   - Agora: make(0, len), depois append -> lista correta.

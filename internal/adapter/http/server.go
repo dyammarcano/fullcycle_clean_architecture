@@ -17,10 +17,10 @@ import (
 )
 
 type OrderServer struct {
-	UseCase *usecase.OrderUseCase
-
 	http.Server
 	http.Handler
+
+	UseCase *usecase.OrderUseCase
 }
 
 func (s *OrderServer) ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +34,7 @@ func (s *OrderServer) ListOrdersHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *OrderServer) GetGraphQLHandler(w http.ResponseWriter, r *http.Request) {
-	s.Handler.ServeHTTP(w, r)
+	s.ServeHTTP(w, r)
 }
 
 func (s *OrderServer) CreateOrderHandler(w http.ResponseWriter, r *http.Request) {

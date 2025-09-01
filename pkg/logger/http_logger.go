@@ -28,7 +28,8 @@ func Middleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(wrapped, r)
 
-		Log(
+		LogContext(
+			r.Context(),
 			slog.LevelInfo,
 			"middleware",
 			slog.Int("status", wrapped.statusCode),

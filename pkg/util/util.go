@@ -35,16 +35,3 @@ func HelperJSON(w http.ResponseWriter, r *http.Request, data any) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
-
-type ErrorResponse struct {
-	Error string `json:"error"`
-}
-
-// HandleError return error message in json format
-func HandleError(w http.ResponseWriter, r *http.Request, error error) {
-	w.Header().Set("Content-Type", "application/json")
-
-	if err := json.NewEncoder(w).Encode(ErrorResponse{Error: error.Error()}); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}

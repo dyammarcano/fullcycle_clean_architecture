@@ -11,7 +11,11 @@ var httpCmd = &cobra.Command{
 	Use:   "http",
 	Short: "Start HTTP server",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		orderRepo := repository.Must(repository.NewOrderPostgresRepository())
+		orderRepo, err := repository.NewOrderPostgresRepository()
+		if err != nil {
+			return err
+		}
+
 		orderServer := http.NewHttpOrderServer(usecase.NewOrderUseCase(orderRepo))
 		return orderServer.Start()
 	},

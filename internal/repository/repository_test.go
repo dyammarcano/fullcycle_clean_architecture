@@ -7,7 +7,10 @@ import (
 )
 
 func TestRepository(t *testing.T) {
-	var repository = Must(NewMemoryRepository())
+	repository, err := NewMemoryRepository()
+	if err != nil {
+		t.Fatalf("Error creating repository")
+	}
 
 	var order = &domain.Order{
 		Item:   "Bag",

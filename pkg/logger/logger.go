@@ -45,6 +45,8 @@ func setFormat(w io.Writer, opts *slog.HandlerOptions) slog.Handler {
 	switch config.G.Logger.LogFormat {
 	case "json":
 		return slog.NewJSONHandler(w, opts)
+	case "text":
+		return slog.NewTextHandler(w, opts)
 	default:
 		return slog.NewTextHandler(w, opts)
 	}

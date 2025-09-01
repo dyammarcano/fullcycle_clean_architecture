@@ -70,6 +70,11 @@ func (r *OrderPostgresRepository) CreateOrder(order *domain.Order) (*domain.Orde
 	if err != nil {
 		return nil, err
 	}
+	defer func(rows *sql.Rows) {
+		if err := rows.Close(); err != nil {
+			slog.Error(">>> Error closing rows: ", slog.String("error", err.Error()))
+		}
+	}(rows)
 
 	for rows.Next() {
 		if err = rows.Scan(&order.ID); err != nil {
@@ -123,7 +128,7 @@ func (r *OrderPostgresRepository) DeleteOrder(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	stmt, err := r.db.PrepareContext(ctx, `DELETE FROM orders WHERE id = $1 RETURNING id`)
+	stmt, err := r.db.PrepareContext(ctx, `DELETE FROM orders WHERE id = $1`)
 	if err != nil {
 		return err
 	}
@@ -133,8 +138,7 @@ func (r *OrderPostgresRepository) DeleteOrder(id int) error {
 		}
 	}(stmt)
 
-	_, err = stmt.Exec(id)
-	if err != nil {
+	if _, err = stmt.Exec(id); err != nil {
 		return err
 	}
 
