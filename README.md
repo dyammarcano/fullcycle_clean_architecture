@@ -23,6 +23,8 @@ serviço.
 
 # Arquitetura do projeto
 
+Consulte também ARCHITECTURE.md para uma análise detalhada da separação das camadas.
+
 ![img.png](img.png)
 
 ```text

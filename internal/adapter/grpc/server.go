@@ -25,7 +25,7 @@ func (s *OrderServer) ListOrders(ctx context.Context, req *pb.ListOrdersRequest)
 		return nil, err
 	}
 
-	grpcOrders := make([]*pb.Order, len(orders))
+	grpcOrders := make([]*pb.Order, 0, len(orders))
 	for _, order := range orders {
 		grpcOrders = append(grpcOrders, &pb.Order{
 			Id:     int32(order.ID),
