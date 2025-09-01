@@ -1,22 +1,26 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
+	"log/slog"
+	"net/http"
+	"strconv"
+
+	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 	"github.com/dyammarcano/fullcycle_clean_architecture/internal/usecase"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/logger"
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/util"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"log/slog"
-	"net/http"
-	"strconv"
 )
 
 type OrderServer struct {
-	UseCase *usecase.OrderUseCase
 	http.Server
 	http.Handler
+
+	UseCase *usecase.OrderUseCase
 }
 
 func (s *OrderServer) ListOrdersHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,11 +29,12 @@ func (s *OrderServer) ListOrdersHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	util.HelperJSOM(w, r, orders)
+
+	util.HelperJSON(w, r, orders)
 }
 
 func (s *OrderServer) GetGraphQLHandler(w http.ResponseWriter, r *http.Request) {
-	s.Handler.ServeHTTP(w, r)
+	s.ServeHTTP(w, r)
 }
 
 func (s *OrderServer) CreateOrderHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,12 +43,20 @@ func (s *OrderServer) CreateOrderHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	order, err := s.UseCase.CreateOrder(orderBytes)
+
+	var order domain.Order
+	if err := json.Unmarshal(orderBytes, &order); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	created, err := s.UseCase.CreateOrder(&order)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	util.HelperJSOM(w, r, order)
+
+	util.HelperJSON(w, r, created)
 }
 
 func (s *OrderServer) GetOrderByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,12 +65,14 @@ func (s *OrderServer) GetOrderByIDHandler(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	order, err := s.UseCase.GetOrderByID(idInt)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	util.HelperJSOM(w, r, order)
+
+	util.HelperJSON(w, r, order)
 }
 
 func (s *OrderServer) UpdateOrderHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,18 +81,25 @@ func (s *OrderServer) UpdateOrderHandler(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	orderBytes, err := util.ReadBytes(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	order, err := s.UseCase.UpdateOrder(idInt, orderBytes)
-	if err != nil {
+	var order domain.Order
+	if err := json.Unmarshal(orderBytes, &order); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err = s.UseCase.UpdateOrder(idInt, &order); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	util.HelperJSOM(w, r, order)
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (s *OrderServer) DeleteOrderHandler(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +155,6 @@ func NewGraphQL(useCase *usecase.OrderUseCase) http.Handler {
 		Playground: true,
 	})
 
-	//return JWTMiddleware(graphqlHandler)
 	return graphqlHandler
 }
 

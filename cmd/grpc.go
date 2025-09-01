@@ -11,7 +11,11 @@ var grpcCmd = &cobra.Command{
 	Use:   "grpc",
 	Short: "Start gRPC server",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		orderRepo := repository.Must(repository.NewOrderPostgresRepository())
+		orderRepo, err := repository.NewOrderPostgresRepository()
+		if err != nil {
+			return err
+		}
+
 		orderServer := grpc.NewGrpcOrderServer(usecase.NewOrderUseCase(orderRepo))
 		return orderServer.Start()
 	},

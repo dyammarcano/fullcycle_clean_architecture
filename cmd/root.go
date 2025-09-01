@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 	"os"
+
+	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/config"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,11 +27,11 @@ func init() {
 	rootCmd.PersistentFlags().StringP("config", "c", "config.yaml", "config file (default is $binary_path/config.yaml)")
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in the config file and ENV variables if set.
 func initConfig() {
 	cfgFile, err := rootCmd.Flags().GetString("config")
 	if err != nil {
-		fmt.Println("Error getting config file")
+		_, _ = fmt.Fprintln(os.Stdout, "Error getting config file")
 		os.Exit(1)
 	}
 
@@ -39,17 +40,17 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err = viper.ReadInConfig(); err != nil {
-		fmt.Println("Error reading config file")
+		_, _ = fmt.Fprintln(os.Stdout, "Error reading config file")
 		os.Exit(1)
 	}
 
 	if err = viper.Unmarshal(config.G); err != nil {
-		fmt.Println("Error unmarshalling config")
+		_, _ = fmt.Fprintln(os.Stdout, "Error unmarshalling config")
 		os.Exit(1)
 	}
 
 	if err = config.G.Validate(); err != nil {
-		fmt.Println("Error validating config")
+		_, _ = fmt.Fprintln(os.Stdout, "Error validating config")
 		os.Exit(1)
 	}
 }

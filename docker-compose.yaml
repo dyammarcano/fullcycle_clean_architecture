@@ -10,7 +10,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,7 +24,7 @@ services:
     depends_on:
       db_postgres:
         condition: service_healthy
-    entrypoint: ["/app/app", "http", "--config", "/app/config.yaml"]
+    entrypoint: [ "/app/app", "http", "--config", "/app/config.yaml" ]
 
   app_grpc:
     build:
@@ -35,7 +35,7 @@ services:
     depends_on:
       db_postgres:
         condition: service_healthy
-    entrypoint: ["/app/app", "grpc", "--config", "/app/config.yaml"]
+    entrypoint: [ "/app/app", "grpc", "--config", "/app/config.yaml" ]
 
 volumes:
   db_data:

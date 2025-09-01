@@ -214,6 +214,7 @@ func WithBoltDB(name, path string) OptsFunc {
 	if !strings.HasSuffix(path, ".db") {
 		path = fmt.Sprintf("%s.db", path)
 	}
+
 	return func(o *Service) {
 		o.Db.Dbname = name
 		o.Db.DBPath = path
@@ -225,6 +226,7 @@ func WithSqliteDB(name, path string) OptsFunc {
 	if !strings.HasSuffix(path, ".sqlite") {
 		path = fmt.Sprintf("%s.sqlite", path)
 	}
+
 	return func(o *Service) {
 		o.Db.Dbname = name
 		o.Db.DBPath = path

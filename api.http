@@ -5,9 +5,9 @@ POST http://localhost:8080/order
 Content-Type: application/json
 
 {
-  "id": 1,
-  "item": "Item 1",
-  "amount": 100.50
+    "id": 1,
+    "item": "Item 1",
+    "amount": 100.50
 }
 
 ###

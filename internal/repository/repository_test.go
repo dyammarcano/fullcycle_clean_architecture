@@ -1,14 +1,18 @@
 package repository
 
 import (
-	"github.com/dyammarcano/fullcycle_clean_architecture/internal/entity"
 	"testing"
+
+	"github.com/dyammarcano/fullcycle_clean_architecture/internal/domain"
 )
 
 func TestRepository(t *testing.T) {
-	var repository = Must(NewMemoryRepository())
+	repository, err := NewMemoryRepository()
+	if err != nil {
+		t.Fatalf("Error creating repository")
+	}
 
-	var order = &entity.Order{
+	var order = &domain.Order{
 		Item:   "Bag",
 		Amount: 2,
 	}
@@ -32,18 +36,11 @@ func TestRepository(t *testing.T) {
 
 	order.Amount = 5
 
-	orderInput := &entity.OrderInputDTO{
-		ID:     order.ID,
-		Item:   order.Item,
-		Amount: order.Amount,
-	}
-
-	_, err = repository.UpdateOrder(orderInput.ID, orderInput)
-	if err != nil {
+	if err = repository.UpdateOrder(order.ID, order); err != nil {
 		t.Errorf("Error updating order")
 	}
 
-	if err = repository.DeleteOrder(orderInput.ID); err != nil {
+	if err = repository.DeleteOrder(order.ID); err != nil {
 		t.Errorf("Error deleting order")
 	}
 }
