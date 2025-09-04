@@ -36,8 +36,7 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	svc := parameters.Service{}
-	if err := config.InitServiceConfig(svc, cfgFile); err != nil {
+	if err := config.InitServiceConfig(&parameters.Service{}, cfgFile); err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 }

@@ -15,27 +15,27 @@ services:
       timeout: 5s
       retries: 5
 
-  app_http:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      db_postgres:
-        condition: service_healthy
-    entrypoint: [ "/app/app", "http", "--config", "/app/config.yaml" ]
-
-  app_grpc:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    depends_on:
-      db_postgres:
-        condition: service_healthy
-    entrypoint: [ "/app/app", "grpc", "--config", "/app/config.yaml" ]
+#  app_http:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      db_postgres:
+#        condition: service_healthy
+#    entrypoint: [ "/app/app", "http", "--config", "/app/config.yaml" ]
+#
+#  app_grpc:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      db_postgres:
+#        condition: service_healthy
+#    entrypoint: [ "/app/app", "grpc", "--config", "/app/config.yaml" ]
 
 volumes:
   db_data:

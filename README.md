@@ -25,30 +25,55 @@ serviço.
 
 Consulte também ARCHITECTURE.md para uma análise detalhada da separação das camadas.
 
-![img.png](img.png)
+![img.png](doc/img/img.png)
 
 ```text
 github.com/dyammarcano/fullcycle_clean_architecture
-├───cmd
-├───internal
-│   ├───adapter        # Adapters (driving/driven): HTTP, gRPC, GraphQL
-│   │   ├───grpc
-│   │   └───http
-│   ├───domain         # Core domain entities and repository interfaces
-│   ├───repository     # Infrastructure implementations of domain ports
-│   │   └───migrations
-│   └───usecase        # Application services (business rules), depend on domain ports
-└───pkg
-│   ├───config
-│   ├───grpc
-│   │   ├───pb
-│   │   └───proto
-│   ├───logger
-│   └───util
-├── main.go
-├── Dockerfile
+├── api.http
+├── ARCHITECTURE.md
+├── cmd
+│   ├── grpc.go
+│   ├── http.go
+│   └── root.go
+├── config.yaml
 ├── docker-compose.yaml
-└── README.md
+├── Dockerfile
+├── internal
+│   ├── adapter
+│   │   ├── grpc
+│   │   │   └── server.go
+│   │   └── http
+│   │       └── server.go
+│   ├── domain
+│   │   └── order.go
+│   ├── entity
+│   │   └── order_entity.go
+│   ├── repository
+│   │   ├── migrations
+│   │   │   ├── 000001_create_orders_table.down.sql
+│   │   │   └── 000001_create_orders_table.up.sql
+│   │   ├── order_memory.go
+│   │   ├── order_postgres.go
+│   │   └── repository_test.go
+│   └── usecase
+│       └── order_usecase.go
+├── LICENSE
+├── main.go
+├── pkg
+│   ├── grpc
+│   │   ├── pb
+│   │   │   ├── order_grpc.pb.go
+│   │   │   └── order.pb.go
+│   │   └── proto
+│   │       ├── gen.go
+│   │       └── order.proto
+│   ├── logger
+│   │   └── http_logger.go
+│   ├── parameters
+│   │   └── parameters.go
+│   └── util
+│       └── util.go
+├── README.md
 ```
 
 ## Hexagonal (Ports and Adapters) compliance
@@ -98,22 +123,22 @@ $  docker-compose up --build
 
 4. Acesse o endereço [http://localhost:8080/graphql](http://localhost:8080/graphql) para acessar a ‘interface’ do GraphQL Playground
 
-![img_1.png](img_1.png)
+![img_1.png](doc/img/img_1.png)
 
 5. Acesse o endereço [http://localhost:8080/order](http://localhost:8080/order) para acessar a ‘interface’ http
 
-![img_2.png](img_2.png)
+![img_2.png](doc/img/img_2.png)
 
 6. Acesse o endereço [127.0.0.1:8081](127.0.0.1:8081) para acessar a ‘interface’ do gRPC
 
-![img_3.png](img_3.png)
-![img_4.png](img_4.png)
+![img_3.png](doc/img/img_3.png)
+![img_4.png](doc/img/img_4.png)
 
 # Endpoints
 
-- GraphQL Playground: `http://localhost:8080/graphql`
-- gRPC: `http://localhost:8081/`
-- REST: `http://localhost:8080/order`
+- [GraphQL Playground](http://localhost:8080/graphql)
+- [gRPC](http://localhost:8081/)
+- [REST](http://localhost:8080/order)
 
 # GraphQL Query
 

@@ -12,6 +12,7 @@ import (
 	"github.com/dyammarcano/fullcycle_clean_architecture/pkg/parameters"
 	"github.com/inovacc/config"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type OrderServer struct {
@@ -57,7 +58,10 @@ func (s *OrderServer) Start() error {
 	grpcServer := grpc.NewServer()
 	pb.RegisterOrderServiceServer(grpcServer, s)
 
-	slog.Info("gRPC server is running on port", slog.String("port", lis.Addr().String()))
+	// Enable gRPC server reflection for tools like evans or grpcurl
+	reflection.Register(grpcServer)
+
+	slog.Info("gRPC server is running on port", slog.String("port", fmt.Sprintf(":%d", cfg.Grpc.Port)))
 
 	return grpcServer.Serve(lis)
 }

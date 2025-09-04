@@ -39,10 +39,12 @@ func (r *OrderPostgresRepository) ListOrders() ([]*domain.Order, error) {
 	orders := make([]*domain.Order, 0)
 	for rows.Next() {
 		var order domain.Order
+		var amountTmp float64
 
-		if err = rows.Scan(&order.ID, &order.Item, &order.Amount); err != nil {
+		if err = rows.Scan(&order.ID, &order.Item, &amountTmp); err != nil {
 			return orders, err
 		}
+		order.Amount = float32(amountTmp)
 
 		orders = append(orders, &order)
 	}
@@ -94,7 +96,8 @@ func (r *OrderPostgresRepository) GetOrderByID(id int) (*domain.Order, error) {
 	row := r.db.QueryRowContext(ctx, "SELECT id, item, amount FROM orders WHERE id = $1", id)
 
 	order := &domain.Order{}
-	if err := row.Scan(&order.ID, &order.Item, &order.Amount); err != nil {
+	var amountTmp float64
+	if err := row.Scan(&order.ID, &order.Item, &amountTmp); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("order not found")
 		}

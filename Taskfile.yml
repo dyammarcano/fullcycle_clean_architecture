@@ -22,3 +22,20 @@ tasks:
   build-prod:
     cmds:
       - goreleaser --snapshot --skip-publish --rm-dist
+
+  db:up:
+    desc: "Start PostgreSQL (postgres:16.3) without Docker Compose"
+    cmds:
+      - docker volume create db_data
+      - docker rm -f fullcycle_pg || true
+      - docker run -d --name fullcycle_pg -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_DB=postgres -p 5432:5432 -v db_data:/var/lib/postgresql/data --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5 postgres:16.3
+
+  db:down:
+    desc: "Stop and remove PostgreSQL container (keeps volume)"
+    cmds:
+      - docker rm -f fullcycle_pg || true
+
+  db:logs:
+    desc: "Follow logs for PostgreSQL container"
+    cmds:
+      - docker logs -f fullcycle_pg

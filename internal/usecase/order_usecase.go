@@ -19,6 +19,7 @@ func (o *OrderUseCase) CreateOrder(orderBytes []byte) (*domain.Order, error) {
 	if err := json.Unmarshal(orderBytes, order); err != nil {
 		return nil, err
 	}
+
 	return o.OrderRepo.CreateOrder(order)
 }
 
@@ -31,10 +32,13 @@ func (o *OrderUseCase) UpdateOrder(id int, orderBytes []byte) (*domain.Order, er
 	if err := json.Unmarshal(orderBytes, order); err != nil {
 		return nil, err
 	}
+
 	if err := o.OrderRepo.UpdateOrder(id, order); err != nil {
 		return nil, err
 	}
+
 	order.ID = id
+
 	return order, nil
 }
 

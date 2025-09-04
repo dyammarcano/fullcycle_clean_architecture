@@ -15,6 +15,7 @@ func (r *OrderMemoryRepository) GetOrderByID(id int) (*domain.Order, error) {
 	if !ok {
 		return nil, errors.New("order not found")
 	}
+
 	return order, nil
 }
 
@@ -23,6 +24,7 @@ func (r *OrderMemoryRepository) ListOrders() ([]*domain.Order, error) {
 	for _, order := range r.orders {
 		orders = append(orders, order)
 	}
+
 	return orders, nil
 }
 
@@ -30,13 +32,16 @@ func (r *OrderMemoryRepository) CreateOrder(order *domain.Order) (*domain.Order,
 	if order == nil {
 		return nil, errors.New("invalid entity")
 	}
+
 	if order.ID != 0 {
 		if _, ok := r.orders[order.ID]; ok {
 			return nil, errors.New("order already exists")
 		}
 	}
+
 	order.ID = len(r.orders) + 1
 	r.orders[order.ID] = order
+
 	return order, nil
 }
 
@@ -44,11 +49,14 @@ func (r *OrderMemoryRepository) UpdateOrder(id int, order *domain.Order) error {
 	if order == nil {
 		return errors.New("invalid entity")
 	}
+
 	if _, ok := r.orders[id]; !ok {
 		return errors.New("order not found")
 	}
+
 	order.ID = id
 	r.orders[id] = order
+
 	return nil
 }
 
@@ -56,12 +64,15 @@ func (r *OrderMemoryRepository) DeleteOrder(id int) error {
 	if _, ok := r.orders[id]; !ok {
 		return errors.New("order not found")
 	}
+
 	delete(r.orders, id)
+
 	return nil
 }
 
 func (r *OrderMemoryRepository) Close() error {
 	r.orders = nil
+
 	return nil
 }
 

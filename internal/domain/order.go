@@ -23,5 +23,6 @@ func (o *Order) Bytes() []byte {
 	if err != nil {
 		return nil
 	}
+
 	return data
 }

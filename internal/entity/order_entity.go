@@ -24,10 +24,12 @@ func (c *createOrderUseCase) Execute(input *OrderInputDTO) (*OrderOutputDTO, err
 	if err := order.IsValid(); err != nil {
 		return nil, err
 	}
+
 	createdOrder, err := c.repo.CreateOrder(&order)
 	if err != nil {
 		return nil, err
 	}
+
 	return createdOrder, nil
 }
 
@@ -69,9 +71,11 @@ func NewOrder(id int, item string, amount float32) (*Order, error) {
 		Item:   item,
 		Amount: amount,
 	}
+
 	if err := order.IsValid(); err != nil {
 		return nil, err
 	}
+
 	return order, nil
 }
 
@@ -79,8 +83,10 @@ func (o *Order) IsValid() error {
 	if o.Item == "" {
 		return ErrInvalidEntity
 	}
+
 	if o.Amount <= 0 {
 		return ErrInvalidEntity
 	}
+
 	return nil
 }
